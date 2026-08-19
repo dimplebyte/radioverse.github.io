@@ -1,0 +1,170 @@
+{
+  "state": "Rajasthan",
+  "stateCode": "RJ",
+  "districts": [
+    {
+      "id": "ajmer",
+      "name": "Ajmer"
+    },
+    {
+      "id": "alwar",
+      "name": "Alwar"
+    },
+    {
+      "id": "balotra",
+      "name": "Balotra"
+    },
+    {
+      "id": "banswara",
+      "name": "Banswara"
+    },
+    {
+      "id": "baran",
+      "name": "Baran"
+    },
+    {
+      "id": "barmer",
+      "name": "Barmer"
+    },
+    {
+      "id": "beawar",
+      "name": "Beawar"
+    },
+    {
+      "id": "bharatpur",
+      "name": "Bharatpur"
+    },
+    {
+      "id": "bhilwara",
+      "name": "Bhilwara"
+    },
+    {
+      "id": "bikaner",
+      "name": "Bikaner"
+    },
+    {
+      "id": "bundi",
+      "name": "Bundi"
+    },
+    {
+      "id": "chittorgarh",
+      "name": "Chittorgarh"
+    },
+    {
+      "id": "churu",
+      "name": "Churu"
+    },
+    {
+      "id": "dausa",
+      "name": "Dausa"
+    },
+    {
+      "id": "deeg",
+      "name": "Deeg"
+    },
+    {
+      "id": "dholpur",
+      "name": "Dholpur"
+    },
+    {
+      "id": "didwana-kuchaman",
+      "name": "Didwana-Kuchaman"
+    },
+    {
+      "id": "dungarpur",
+      "name": "Dungarpur"
+    },
+    {
+      "id": "hanumangarh",
+      "name": "Hanumangarh"
+    },
+    {
+      "id": "jaipur",
+      "name": "Jaipur"
+    },
+    {
+      "id": "jaisalmer",
+      "name": "Jaisalmer"
+    },
+    {
+      "id": "jalore",
+      "name": "Jalore"
+    },
+    {
+      "id": "jhalawar",
+      "name": "Jhalawar"
+    },
+    {
+      "id": "jhunjhunu",
+      "name": "Jhunjhunu"
+    },
+    {
+      "id": "jodhpur",
+      "name": "Jodhpur"
+    },
+    {
+      "id": "karauli",
+      "name": "Karauli"
+    },
+    {
+      "id": "khairthal-tijara",
+      "name": "Khairthal-Tijara"
+    },
+    {
+      "id": "kota",
+      "name": "Kota"
+    },
+    {
+      "id": "kotputli-behror",
+      "name": "Kotputli-Behror"
+    },
+    {
+      "id": "nagaur",
+      "name": "Nagaur"
+    },
+    {
+      "id": "pali",
+      "name": "Pali"
+    },
+    {
+      "id": "phalon",
+      "name": "Phalodi"
+    },
+    {
+      "id": "pratapgarh",
+      "name": "Pratapgarh"
+    },
+    {
+      "id": "rajgarh",
+      "name": "Rajsamand"
+    },
+    {
+      "id": "sawai-madhopur",
+      "name": "Sawai Madhopur"
+    },
+    {
+      "id": "salumbar",
+      "name": "Salumbar"
+    },
+    {
+      "id": "sikar",
+      "name": "Sikar"
+    },
+    {
+      "id": "sirohi",
+      "name": "Sirohi"
+    },
+    {
+      "id": "sri-ganganagar",
+      "name": "Sri Ganganagar"
+    },
+    {
+      "id": "tonk",
+      "name": "Tonk"
+    },
+    {
+      "id": "udaipur",
+      "name": "Udaipur"
+    }
+  ]
+    }
