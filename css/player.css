@@ -1,0 +1,1328 @@
+/* =========================================================
+   RADIO GLOBE
+   player.css
+   Premium glass radio player
+   Made by Dimple Khangarot
+========================================================= */
+
+
+/* =========================================================
+   01. STATION PANEL
+========================================================= */
+
+.station-panel {
+
+    position: fixed;
+
+    left: 28px;
+    bottom: 28px;
+
+    z-index: 80;
+
+    width: min(390px, calc(100vw - 56px));
+
+    padding: 18px;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.13);
+
+    border-radius:
+        28px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(27, 19, 40, 0.82),
+            rgba(10, 8, 20, 0.72)
+        );
+
+    backdrop-filter:
+        blur(28px)
+        saturate(130%);
+
+    -webkit-backdrop-filter:
+        blur(28px)
+        saturate(130%);
+
+    box-shadow:
+        0 25px 80px rgba(0, 0, 0, 0.42),
+        0 0 45px rgba(196, 128, 255, 0.07);
+
+    overflow: hidden;
+
+    transform:
+        translateY(0);
+
+    transition:
+        transform 0.5s cubic-bezier(.22,.61,.36,1),
+        opacity 0.4s ease,
+        visibility 0.4s ease;
+
+}
+
+
+/* =========================================================
+   PANEL HIDDEN STATE
+========================================================= */
+
+.station-panel.hidden {
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transform:
+        translateY(25px);
+
+}
+
+
+/* =========================================================
+   02. PANEL HEADER
+========================================================= */
+
+.station-panel-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    min-height: 24px;
+
+}
+
+
+/* =========================================================
+   LIVE INDICATOR
+========================================================= */
+
+.live-indicator {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding:
+        5px 9px;
+
+    border-radius:
+        999px;
+
+    background:
+        rgba(255, 107, 170, 0.08);
+
+    border:
+        1px solid
+        rgba(255, 163, 210, 0.12);
+
+    color:
+        rgba(255, 214, 235, 0.78);
+
+    font-size: 0.53rem;
+
+    font-weight: 600;
+
+    letter-spacing: 0.12em;
+
+}
+
+
+.live-indicator > span {
+
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background:
+        #ff9acb;
+
+    box-shadow:
+        0 0 8px #ff9acb;
+
+    animation:
+        livePulse 1.5s ease-in-out infinite;
+
+}
+
+
+@keyframes livePulse {
+
+    0%,
+    100% {
+
+        opacity: .45;
+
+        transform: scale(.8);
+
+    }
+
+    50% {
+
+        opacity: 1;
+
+        transform: scale(1.15);
+
+    }
+
+}
+
+
+/* =========================================================
+   CLOSE BUTTON
+========================================================= */
+
+.close-panel {
+
+    width: 28px;
+    height: 28px;
+
+    display: grid;
+
+    place-items: center;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 255, 255, 0.055);
+
+    color:
+        rgba(255, 255, 255, 0.55);
+
+    font-size: 1.1rem;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        color .2s ease,
+        transform .2s ease;
+
+}
+
+
+.close-panel:hover {
+
+    background:
+        rgba(255, 255, 255, 0.11);
+
+    color:
+        white;
+
+    transform:
+        rotate(90deg);
+
+}
+
+
+/* =========================================================
+   03. STATION ART
+========================================================= */
+
+.station-art {
+
+    position: relative;
+
+    width: 100%;
+    height: 105px;
+
+    margin-top: 10px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius:
+        20px;
+
+    overflow: hidden;
+
+    background:
+
+        radial-gradient(
+            circle at center,
+            rgba(203, 144, 255, 0.18),
+            rgba(255, 173, 220, 0.06) 32%,
+            transparent 68%
+        );
+
+}
+
+
+/* =========================================================
+   ART GLOW
+========================================================= */
+
+.station-art-glow {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 85px;
+    height: 85px;
+
+    transform:
+        translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(255, 190, 225, 0.3),
+            rgba(183, 137, 255, 0.12) 40%,
+            transparent 72%
+        );
+
+    filter: blur(8px);
+
+    animation:
+        artGlow 3s ease-in-out infinite alternate;
+
+}
+
+
+@keyframes artGlow {
+
+    from {
+
+        opacity: .55;
+
+        transform:
+            translate(-50%, -50%)
+            scale(.85);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.15);
+
+    }
+
+}
+
+
+/* =========================================================
+   ART ICON
+========================================================= */
+
+.station-art-icon {
+
+    position: relative;
+
+    z-index: 2;
+
+    width: 62px;
+    height: 62px;
+
+    display: grid;
+
+    place-items: center;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 211, 236, 0.14),
+            rgba(177, 130, 255, 0.12)
+        );
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.14);
+
+    box-shadow:
+        inset 0 0 25px
+        rgba(255, 255, 255, 0.035),
+        0 0 35px
+        rgba(204, 143, 255, 0.13);
+
+    font-size: 1.7rem;
+
+}
+
+
+/* =========================================================
+   04. STATION INFORMATION
+========================================================= */
+
+.station-information {
+
+    margin-top: 15px;
+
+}
+
+
+.station-label {
+
+    font-size: 0.51rem;
+
+    font-weight: 600;
+
+    letter-spacing: 0.19em;
+
+    color:
+        rgba(255, 255, 255, 0.38);
+
+}
+
+
+.station-name {
+
+    margin-top: 3px;
+
+    font-family:
+        var(--font-display);
+
+    font-size:
+        clamp(1.45rem, 4vw, 1.9rem);
+
+    font-weight: 600;
+
+    line-height: 1.05;
+
+    letter-spacing: 0.02em;
+
+    color:
+        rgba(255, 246, 251, 0.95);
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+}
+
+
+.station-location {
+
+    margin-top: 5px;
+
+    font-size: 0.68rem;
+
+    color:
+        rgba(255, 255, 255, 0.47);
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+}
+
+
+/* =========================================================
+   05. STATION TAGS
+========================================================= */
+
+.station-tags {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    flex-wrap: wrap;
+
+    margin-top: 9px;
+
+}
+
+
+.station-tag {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    padding:
+        4px 8px;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.09);
+
+    border-radius:
+        999px;
+
+    background:
+        rgba(255, 255, 255, 0.04);
+
+    color:
+        rgba(255, 255, 255, 0.48);
+
+    font-size: 0.52rem;
+
+}
+
+
+/* =========================================================
+   06. PLAYER
+========================================================= */
+
+.player {
+
+    margin-top: 16px;
+
+}
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+.player-progress {
+
+    width: 100%;
+    height: 3px;
+
+    overflow: hidden;
+
+    border-radius: 99px;
+
+    background:
+        rgba(255, 255, 255, 0.08);
+
+}
+
+
+.progress-bar {
+
+    width: 0%;
+
+    height: 100%;
+
+    border-radius: inherit;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--pink),
+            var(--lavender)
+        );
+
+    box-shadow:
+        0 0 10px
+        rgba(255, 181, 224, 0.5);
+
+    transition:
+        width .25s linear;
+
+}
+
+
+/* =========================================================
+   07. PLAYER CONTROLS
+========================================================= */
+
+.player-controls {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 13px;
+
+    margin-top: 14px;
+
+}
+
+
+/* =========================================================
+   PLAYER BUTTON
+========================================================= */
+
+.player-button {
+
+    width: 36px;
+    height: 36px;
+
+    display: grid;
+
+    place-items: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.09);
+
+    background:
+        rgba(255, 255, 255, 0.045);
+
+    color:
+        rgba(255, 255, 255, 0.72);
+
+    cursor: pointer;
+
+    transition:
+        transform .2s ease,
+        background .2s ease,
+        color .2s ease,
+        border-color .2s ease;
+
+}
+
+
+.player-button:hover {
+
+    transform:
+        translateY(-2px);
+
+    color:
+        white;
+
+    background:
+        rgba(255, 186, 225, 0.10);
+
+    border-color:
+        rgba(255, 186, 225, 0.2);
+
+}
+
+
+/* =========================================================
+   PLAY BUTTON
+========================================================= */
+
+.play-button {
+
+    width: 52px;
+    height: 52px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 195, 226, 0.92),
+            rgba(187, 147, 255, 0.92)
+        );
+
+    border:
+        0;
+
+    color:
+        #25152b;
+
+    box-shadow:
+        0 8px 25px
+        rgba(190, 126, 221, 0.22),
+        0 0 25px
+        rgba(255, 180, 224, 0.12);
+
+}
+
+
+.play-button:hover {
+
+    transform:
+        translateY(-3px)
+        scale(1.05);
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffd9ec,
+            #ceb2ff
+        );
+
+}
+
+
+/* =========================================================
+   PLAY ICON
+========================================================= */
+
+.play-button img {
+
+    width: 17px;
+    height: 17px;
+
+    filter:
+        brightness(0)
+        saturate(100%)
+        invert(13%)
+        sepia(14%)
+        saturate(1600%)
+        hue-rotate(250deg)
+        brightness(85%);
+
+}
+
+
+/* =========================================================
+   FAVORITE BUTTON
+========================================================= */
+
+.favorite-button {
+
+    margin-left: 3px;
+
+}
+
+
+.favorite-button.active {
+
+    color:
+        #ff9dce;
+
+    background:
+        rgba(255, 140, 201, 0.12);
+
+    border-color:
+        rgba(255, 140, 201, 0.24);
+
+}
+
+
+.favorite-button img {
+
+    width: 15px;
+    height: 15px;
+
+    opacity: .78;
+
+    filter:
+        brightness(0)
+        invert(1);
+
+}
+
+
+/* =========================================================
+   08. VOLUME
+========================================================= */
+
+.player-volume {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 13px;
+
+    padding:
+        0 4px;
+
+}
+
+
+.player-volume img {
+
+    width: 14px;
+    height: 14px;
+
+    opacity: .5;
+
+    filter:
+        brightness(0)
+        invert(1);
+
+}
+
+
+#volumeControl {
+
+    width: 100%;
+
+    height: 3px;
+
+    appearance: none;
+
+    -webkit-appearance: none;
+
+    border-radius: 99px;
+
+    background:
+        rgba(255, 255, 255, 0.1);
+
+    outline: none;
+
+    cursor: pointer;
+
+}
+
+
+/* Chrome / Safari */
+
+#volumeControl::-webkit-slider-thumb {
+
+    appearance: none;
+
+    -webkit-appearance: none;
+
+    width: 11px;
+    height: 11px;
+
+    border-radius: 50%;
+
+    border: 0;
+
+    background:
+        var(--pink-soft);
+
+    box-shadow:
+        0 0 8px
+        rgba(255, 181, 222, 0.55);
+
+    cursor: pointer;
+
+}
+
+
+/* Firefox */
+
+#volumeControl::-moz-range-thumb {
+
+    width: 11px;
+    height: 11px;
+
+    border: 0;
+
+    border-radius: 50%;
+
+    background:
+        var(--pink-soft);
+
+    box-shadow:
+        0 0 8px
+        rgba(255, 181, 222, 0.55);
+
+    cursor: pointer;
+
+}
+
+
+/* =========================================================
+   09. PLAYER STATUS
+========================================================= */
+
+.player-status {
+
+    margin-top: 10px;
+
+    text-align: center;
+
+    font-size: 0.54rem;
+
+    letter-spacing: 0.04em;
+
+    color:
+        rgba(255, 255, 255, 0.38);
+
+}
+
+
+.player-status.playing {
+
+    color:
+        rgba(255, 196, 228, 0.72);
+
+}
+
+
+.player-status.error {
+
+    color:
+        rgba(255, 142, 177, 0.75);
+
+}
+
+
+/* =========================================================
+   10. FAVORITES PANEL
+========================================================= */
+
+.favorites-panel {
+
+    position: fixed;
+
+    top: 0;
+    right: 0;
+
+    width:
+        min(380px, 92vw);
+
+    height: 100dvh;
+
+    z-index: 300;
+
+    padding:
+        28px 22px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(25, 17, 37, 0.96),
+            rgba(8, 6, 15, 0.97)
+        );
+
+    border-left:
+        1px solid
+        rgba(255, 255, 255, 0.1);
+
+    backdrop-filter:
+        blur(30px);
+
+    -webkit-backdrop-filter:
+        blur(30px);
+
+    box-shadow:
+        -20px 0 70px
+        rgba(0, 0, 0, 0.35);
+
+    transform:
+        translateX(105%);
+
+    transition:
+        transform .5s cubic-bezier(.22,.61,.36,1);
+
+}
+
+
+.favorites-panel.open {
+
+    transform:
+        translateX(0);
+
+}
+
+
+/* =========================================================
+   FAVORITES HEADER
+========================================================= */
+
+.favorites-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    gap: 15px;
+
+}
+
+
+.favorites-header small {
+
+    display: block;
+
+    margin-bottom: 3px;
+
+    font-size: 0.5rem;
+
+    letter-spacing: 0.18em;
+
+    color:
+        rgba(255, 255, 255, 0.38);
+
+}
+
+
+.favorites-header h2 {
+
+    font-family:
+        var(--font-display);
+
+    font-size: 1.65rem;
+
+    font-weight: 600;
+
+    color:
+        rgba(255, 235, 247, 0.92);
+
+}
+
+
+/* =========================================================
+   FAVORITES LIST
+========================================================= */
+
+.favorites-list {
+
+    margin-top: 25px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    max-height:
+        calc(100dvh - 130px);
+
+    overflow-y: auto;
+
+}
+
+
+.empty-favorites {
+
+    padding: 25px 10px;
+
+    text-align: center;
+
+    font-family:
+        var(--font-display);
+
+    font-size: 1rem;
+
+    color:
+        rgba(255, 255, 255, 0.4);
+
+}
+
+
+/* =========================================================
+   FAVORITE ITEM
+========================================================= */
+
+.favorite-item {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding:
+        12px;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.07);
+
+    border-radius:
+        15px;
+
+    background:
+        rgba(255, 255, 255, 0.035);
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        transform .2s ease,
+        border-color .2s ease;
+
+}
+
+
+.favorite-item:hover {
+
+    transform:
+        translateX(-3px);
+
+    background:
+        rgba(255, 187, 224, 0.07);
+
+    border-color:
+        rgba(255, 187, 224, 0.14);
+
+}
+
+
+.favorite-item-icon {
+
+    width: 38px;
+    height: 38px;
+
+    display: grid;
+
+    place-items: center;
+
+    flex-shrink: 0;
+
+    border-radius: 12px;
+
+    background:
+        rgba(201, 162, 255, 0.08);
+
+}
+
+
+.favorite-item-info {
+
+    min-width: 0;
+
+}
+
+
+.favorite-item-name {
+
+    display: block;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    font-family:
+        var(--font-display);
+
+    font-size: 1rem;
+
+    color:
+        rgba(255, 255, 255, 0.85);
+
+}
+
+
+.favorite-item-location {
+
+    display: block;
+
+    margin-top: 2px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    font-size: 0.56rem;
+
+    color:
+        rgba(255, 255, 255, 0.38);
+
+}
+
+
+/* =========================================================
+   11. MOBILE PLAYER
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .station-panel {
+
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+
+        width: auto;
+
+        padding: 14px;
+
+        border-radius: 23px;
+
+    }
+
+
+    .station-art {
+
+        height: 65px;
+
+        margin-top: 6px;
+
+    }
+
+
+    .station-art-icon {
+
+        width: 48px;
+        height: 48px;
+
+        font-size: 1.3rem;
+
+    }
+
+
+    .station-art-glow {
+
+        width: 65px;
+        height: 65px;
+
+    }
+
+
+    .station-information {
+
+        margin-top: 10px;
+
+    }
+
+
+    .station-name {
+
+        font-size: 1.4rem;
+
+    }
+
+
+    .station-location {
+
+        font-size: 0.62rem;
+
+    }
+
+
+    .player {
+
+        margin-top: 10px;
+
+    }
+
+
+    .player-controls {
+
+        margin-top: 10px;
+
+        gap: 10px;
+
+    }
+
+
+    .player-button {
+
+        width: 33px;
+        height: 33px;
+
+    }
+
+
+    .play-button {
+
+        width: 45px;
+        height: 45px;
+
+    }
+
+
+    .player-volume {
+
+        margin-top: 9px;
+
+    }
+
+
+    .player-status {
+
+        margin-top: 7px;
+
+    }
+
+
+    .favorites-panel {
+
+        width: 100%;
+
+        padding:
+            22px 16px;
+
+    }
+
+}
+
+
+/* =========================================================
+   12. SMALL MOBILE
+========================================================= */
+
+@media (max-width: 420px) {
+
+    .station-panel {
+
+        padding: 12px;
+
+    }
+
+
+    .station-art {
+
+        height: 52px;
+
+    }
+
+
+    .station-art-icon {
+
+        width: 42px;
+        height: 42px;
+
+        font-size: 1.15rem;
+
+    }
+
+
+    .station-name {
+
+        font-size: 1.25rem;
+
+    }
+
+
+    .station-tags {
+
+        margin-top: 6px;
+
+    }
+
+
+    .station-tag {
+
+        padding:
+            3px 7px;
+
+        font-size: 0.48rem;
+
+    }
+
+
+    .player-controls {
+
+        gap: 7px;
+
+    }
+
+}
+
+
+/* =========================================================
+   13. REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .live-indicator > span,
+    .station-art-glow {
+
+        animation: none;
+
+    }
+
+}
+
+
+/* =========================================================
+   END OF player.css
+========================================================= */
