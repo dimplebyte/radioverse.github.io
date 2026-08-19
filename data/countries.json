@@ -1,0 +1,104 @@
+{
+  "countries": [
+    {
+      "code": "IN",
+      "name": "India",
+      "continent": "Asia"
+    },
+    {
+      "code": "US",
+      "name": "United States",
+      "continent": "North America"
+    },
+    {
+      "code": "GB",
+      "name": "United Kingdom",
+      "continent": "Europe"
+    },
+    {
+      "code": "FR",
+      "name": "France",
+      "continent": "Europe"
+    },
+    {
+      "code": "DE",
+      "name": "Germany",
+      "continent": "Europe"
+    },
+    {
+      "code": "IT",
+      "name": "Italy",
+      "continent": "Europe"
+    },
+    {
+      "code": "ES",
+      "name": "Spain",
+      "continent": "Europe"
+    },
+    {
+      "code": "JP",
+      "name": "Japan",
+      "continent": "Asia"
+    },
+    {
+      "code": "CN",
+      "name": "China",
+      "continent": "Asia"
+    },
+    {
+      "code": "AU",
+      "name": "Australia",
+      "continent": "Oceania"
+    },
+    {
+      "code": "BR",
+      "name": "Brazil",
+      "continent": "South America"
+    },
+    {
+      "code": "CA",
+      "name": "Canada",
+      "continent": "North America"
+    },
+    {
+      "code": "MX",
+      "name": "Mexico",
+      "continent": "North America"
+    },
+    {
+      "code": "ZA",
+      "name": "South Africa",
+      "continent": "Africa"
+    },
+    {
+      "code": "EG",
+      "name": "Egypt",
+      "continent": "Africa"
+    },
+    {
+      "code": "AE",
+      "name": "United Arab Emirates",
+      "continent": "Asia"
+    },
+    {
+      "code": "SG",
+      "name": "Singapore",
+      "continent": "Asia"
+    },
+    {
+      "code": "KR",
+      "name": "South Korea",
+      "continent": "Asia"
+    },
+    {
+      "code": "RU",
+      "name": "Russia",
+      "continent": "Europe/Asia"
+    },
+    {
+      "code": "NZ",
+      "name": "New Zealand",
+      "continent": "Oceania"
+    }
+  ]
+}
