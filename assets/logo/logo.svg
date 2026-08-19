@@ -1,0 +1,218 @@
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 512 512"
+    width="512"
+    height="512"
+>
+    <defs>
+
+        <radialGradient
+            id="globeGradient"
+            cx="35%"
+            cy="30%"
+            r="70%"
+        >
+            <stop
+                offset="0%"
+                stop-color="#5ee7ff"
+            />
+
+            <stop
+                offset="55%"
+                stop-color="#1677ff"
+            />
+
+            <stop
+                offset="100%"
+                stop-color="#071a52"
+            />
+        </radialGradient>
+
+        <linearGradient
+            id="ringGradient"
+            x1="0%"
+            y1="0%"
+            x2="100%"
+            y2="100%"
+        >
+            <stop
+                offset="0%"
+                stop-color="#ffffff"
+                stop-opacity="0.9"
+            />
+
+            <stop
+                offset="100%"
+                stop-color="#6ddcff"
+                stop-opacity="0.2"
+            />
+        </linearGradient>
+
+        <filter
+            id="glow"
+            x="-50%"
+            y="-50%"
+            width="200%"
+            height="200%"
+        >
+            <feGaussianBlur
+                stdDeviation="8"
+                result="blur"
+            />
+
+            <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+
+    </defs>
+
+
+    <!-- Outer Radio Ring -->
+
+    <circle
+        cx="256"
+        cy="256"
+        r="218"
+        fill="none"
+        stroke="url(#ringGradient)"
+        stroke-width="10"
+        opacity="0.8"
+    />
+
+
+    <!-- Globe -->
+
+    <circle
+        cx="256"
+        cy="256"
+        r="178"
+        fill="url(#globeGradient)"
+        filter="url(#glow)"
+    />
+
+
+    <!-- Longitude -->
+
+    <ellipse
+        cx="256"
+        cy="256"
+        rx="78"
+        ry="178"
+        fill="none"
+        stroke="#ffffff"
+        stroke-width="4"
+        opacity="0.35"
+    />
+
+    <ellipse
+        cx="256"
+        cy="256"
+        rx="140"
+        ry="178"
+        fill="none"
+        stroke="#ffffff"
+        stroke-width="3"
+        opacity="0.22"
+    />
+
+
+    <!-- Latitude -->
+
+    <ellipse
+        cx="256"
+        cy="256"
+        rx="178"
+        ry="62"
+        fill="none"
+        stroke="#ffffff"
+        stroke-width="4"
+        opacity="0.35"
+    />
+
+    <ellipse
+        cx="256"
+        cy="256"
+        rx="178"
+        ry="120"
+        fill="none"
+        stroke="#ffffff"
+        stroke-width="3"
+        opacity="0.22"
+    />
+
+
+    <!-- Radio Signal -->
+
+    <path
+        d="M256 256
+           L256 112"
+        stroke="#ffffff"
+        stroke-width="8"
+        stroke-linecap="round"
+        opacity="0.9"
+    />
+
+    <circle
+        cx="256"
+        cy="256"
+        r="18"
+        fill="#ffffff"
+    />
+
+
+    <!-- Signal Waves -->
+
+    <path
+        d="M194 150
+           A105 105 0 0 1 318 150"
+        fill="none"
+        stroke="#ffffff"
+        stroke-width="8"
+        stroke-linecap="round"
+        opacity="0.9"
+    />
+
+    <path
+        d="M158 122
+           A150 150 0 0 1 354 122"
+        fill="none"
+        stroke="#ffffff"
+        stroke-width="7"
+        stroke-linecap="round"
+        opacity="0.55"
+    />
+
+
+    <!-- Small Stars -->
+
+    <circle
+        cx="92"
+        cy="105"
+        r="4"
+        fill="#ffffff"
+    />
+
+    <circle
+        cx="420"
+        cy="125"
+        r="4"
+        fill="#ffffff"
+    />
+
+    <circle
+        cx="410"
+        cy="370"
+        r="3"
+        fill="#ffffff"
+    />
+
+    <circle
+        cx="105"
+        cy="385"
+        r="3"
+        fill="#ffffff"
+    />
+
+</svg>
