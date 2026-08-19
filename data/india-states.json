@@ -1,0 +1,156 @@
+{
+  "country": "India",
+  "countryCode": "IN",
+  "states": [
+    {
+      "id": "RJ",
+      "name": "Rajasthan",
+      "capital": "Jaipur"
+    },
+    {
+      "id": "DL",
+      "name": "Delhi",
+      "capital": "New Delhi"
+    },
+    {
+      "id": "MH",
+      "name": "Maharashtra",
+      "capital": "Mumbai"
+    },
+    {
+      "id": "GJ",
+      "name": "Gujarat",
+      "capital": "Gandhinagar"
+    },
+    {
+      "id": "UP",
+      "name": "Uttar Pradesh",
+      "capital": "Lucknow"
+    },
+    {
+      "id": "MP",
+      "name": "Madhya Pradesh",
+      "capital": "Bhopal"
+    },
+    {
+      "id": "HR",
+      "name": "Haryana",
+      "capital": "Chandigarh"
+    },
+    {
+      "id": "PB",
+      "name": "Punjab",
+      "capital": "Chandigarh"
+    },
+    {
+      "id": "HP",
+      "name": "Himachal Pradesh",
+      "capital": "Shimla"
+    },
+    {
+      "id": "JK",
+      "name": "Jammu and Kashmir",
+      "capital": "Srinagar"
+    },
+    {
+      "id": "UK",
+      "name": "Uttarakhand",
+      "capital": "Dehradun"
+    },
+    {
+      "id": "BI",
+      "name": "Bihar",
+      "capital": "Patna"
+    },
+    {
+      "id": "JH",
+      "name": "Jharkhand",
+      "capital": "Ranchi"
+    },
+    {
+      "id": "WB",
+      "name": "West Bengal",
+      "capital": "Kolkata"
+    },
+    {
+      "id": "OD",
+      "name": "Odisha",
+      "capital": "Bhubaneswar"
+    },
+    {
+      "id": "CG",
+      "name": "Chhattisgarh",
+      "capital": "Raipur"
+    },
+    {
+      "id": "TS",
+      "name": "Telangana",
+      "capital": "Hyderabad"
+    },
+    {
+      "id": "AP",
+      "name": "Andhra Pradesh",
+      "capital": "Amaravati"
+    },
+    {
+      "id": "KA",
+      "name": "Karnataka",
+      "capital": "Bengaluru"
+    },
+    {
+      "id": "TN",
+      "name": "Tamil Nadu",
+      "capital": "Chennai"
+    },
+    {
+      "id": "KL",
+      "name": "Kerala",
+      "capital": "Thiruvananthapuram"
+    },
+    {
+      "id": "GA",
+      "name": "Goa",
+      "capital": "Panaji"
+    },
+    {
+      "id": "AS",
+      "name": "Assam",
+      "capital": "Dispur"
+    },
+    {
+      "id": "AR",
+      "name": "Arunachal Pradesh",
+      "capital": "Itanagar"
+    },
+    {
+      "id": "NL",
+      "name": "Nagaland",
+      "capital": "Kohima"
+    },
+    {
+      "id": "MN",
+      "name": "Manipur",
+      "capital": "Imphal"
+    },
+    {
+      "id": "MZ",
+      "name": "Mizoram",
+      "capital": "Aizawl"
+    },
+    {
+      "id": "TR",
+      "name": "Tripura",
+      "capital": "Agartala"
+    },
+    {
+      "id": "ML",
+      "name": "Meghalaya",
+      "capital": "Shillong"
+    },
+    {
+      "id": "SK",
+      "name": "Sikkim",
+      "capital": "Gangtok"
+    }
+  ]
+    }
