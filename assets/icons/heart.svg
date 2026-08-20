@@ -1,0 +1,21 @@
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 64 64"
+    width="64"
+    height="64"
+    aria-label="Favorite"
+>
+    <path
+        d="M32 52
+           L10 30
+           C-2 18 5 5 17 5
+           C24 5 29 9 32 15
+           C35 9 40 5 47 5
+           C59 5 66 18 54 30
+           Z"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="4"
+        stroke-linejoin="round"
+    />
+</svg>
