@@ -1,0 +1,36 @@
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 64 64"
+    width="64"
+    height="64"
+    aria-label="Volume"
+>
+    <path
+        d="M10 25
+           H20
+           L32 15
+           V49
+           L20 39
+           H10
+           Z"
+        fill="currentColor"
+    />
+
+    <path
+        d="M39 23
+           C46 28 46 36 39 41"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="4"
+        stroke-linecap="round"
+    />
+
+    <path
+        d="M45 16
+           C57 25 57 39 45 48"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="4"
+        stroke-linecap="round"
+    />
+</svg>
