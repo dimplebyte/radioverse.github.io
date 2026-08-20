@@ -1,1381 +1,878 @@
 /* =========================================================
-   RADIO GLOBE
-   globe.js
-   3D interactive globe
-   Made by Dimple Khangarot
+   RADIOVERSE — INTERACTIVE 3D RADIO GLOBE
+   FINAL GLOBE ENGINE
 ========================================================= */
 
+(function () {
 
-/* =========================================================
-   01. GLOBE STATE
-========================================================= */
+    "use strict";
 
-const GlobeState = {
+    /* =====================================================
+       CONFIG
+    ===================================================== */
 
-    initialized: false,
+    const CONFIG = {
+        globeLibrary:
+            "https://cdn.jsdelivr.net/npm/globe.gl@2.45.5/dist/globe.gl.min.js",
 
-    globe: null,
+        topoJson:
+            "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json",
 
-    container: null,
+        topoJsonLibrary:
+            "https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js",
 
-    stationMarkers: [],
-
-    stars: [],
-
-    currentZoom: 1,
-
-    currentLatitude: 20,
-
-    currentLongitude: 78,
-
-    currentLevel: "world",
-
-    animationFrame: null,
-
-    autoRotate: true,
-
-    isDragging: false,
-
-    lastPointerX: 0,
-
-    lastPointerY: 0
-
-};
-
-
-/* =========================================================
-   02. INITIALIZE GLOBE
-========================================================= */
-
-function initializeGlobe() {
-
-    if (GlobeState.initialized) {
-
-        radioLog(
-            "Globe already initialized."
-        );
-
-        return GlobeState.globe;
-
-    }
-
-
-    const container =
-        document.querySelector(
-            "#globe-container"
-        ) ||
-        document.querySelector(
-            ".globe-container"
-        );
-
-
-    if (!container) {
-
-        console.error(
-            "Globe container not found."
-        );
-
-        return null;
-
-    }
-
-
-    GlobeState.container =
-        container;
-
-
-    /*
-       We use a single visual globe.
-       The exact rendering engine can be
-       connected here without creating
-       multiple Earth objects.
-    */
-
-    createGlobeCanvas();
-
-
-    createStarField();
-
-
-    createGlobeAtmosphere();
-
-
-    setupGlobeInteraction();
-
-
-    GlobeState.initialized =
-        true;
-
-
-    radioLog(
-        "RADIO GLOBE initialized."
-    );
-
-
-    return GlobeState.globe;
-
-}
-
-
-/* =========================================================
-   03. CREATE SINGLE GLOBE CANVAS
-========================================================= */
-
-function createGlobeCanvas() {
-
-    const container =
-        GlobeState.container;
-
-
-    let canvas =
-        container.querySelector(
-            "canvas"
-        );
-
-
-    if (!canvas) {
-
-        canvas =
-            document.createElement(
-                "canvas"
-            );
-
-        canvas.className =
-            "radio-globe-canvas";
-
-        container.appendChild(
-            canvas
-        );
-
-    }
-
-
-    const context =
-        canvas.getContext(
-            "2d"
-        );
-
-
-    GlobeState.globe = {
-
-        canvas,
-
-        context,
-
-        radius: 0,
-
-        centerX: 0,
-
-        centerY: 0,
-
-        rotationX: 20,
-
-        rotationY: 0
-
+        backgroundColor: "rgba(0,0,0,0)"
     };
 
 
-    resizeGlobe();
+    /* =====================================================
+       STATE
+    ===================================================== */
 
+    let globe = null;
 
-    window.addEventListener(
-        "resize",
-        resizeGlobe
-    );
+    let globeContainer = null;
 
+    let stations = [];
 
-    drawGlobe();
+    let countryFeatures = [];
 
-}
+    let dependenciesLoaded = false;
 
 
-/* =========================================================
-   04. RESIZE GLOBE
-========================================================= */
+    /* =====================================================
+       LOAD EXTERNAL SCRIPT
+    ===================================================== */
 
-function resizeGlobe() {
+    function loadScript(src) {
 
-    if (
-        !GlobeState.globe ||
-        !GlobeState.container
-    ) {
+        return new Promise((resolve, reject) => {
 
-        return;
+            const existing =
+                document.querySelector(
+                    `script[src="${src}"]`
+                );
 
-    }
+            if (existing) {
 
+                if (
+                    existing.dataset.loaded === "true"
+                ) {
+                    resolve();
+                    return;
+                }
 
-    const canvas =
-        GlobeState.globe.canvas;
+                existing.addEventListener(
+                    "load",
+                    resolve,
+                    { once: true }
+                );
 
+                existing.addEventListener(
+                    "error",
+                    reject,
+                    { once: true }
+                );
 
-    const rect =
-        GlobeState.container
-            .getBoundingClientRect();
+                return;
+            }
 
+            const script =
+                document.createElement("script");
 
-    const dpr =
-        Math.min(
-            window.devicePixelRatio || 1,
-            2
-        );
+            script.src = src;
 
+            script.async = true;
 
-    canvas.width =
-        rect.width * dpr;
+            script.onload = () => {
 
+                script.dataset.loaded = "true";
 
-    canvas.height =
-        rect.height * dpr;
+                resolve();
+            };
 
+            script.onerror = () => {
 
-    canvas.style.width =
-        `${rect.width}px`;
+                reject(
+                    new Error(
+                        `Unable to load ${src}`
+                    )
+                );
+            };
 
-
-    canvas.style.height =
-        `${rect.height}px`;
-
-
-    const ctx =
-        GlobeState.globe.context;
-
-
-    ctx.setTransform(
-        dpr,
-        0,
-        0,
-        dpr,
-        0,
-        0
-    );
-
-
-    GlobeState.globe.centerX =
-        rect.width / 2;
-
-
-    GlobeState.globe.centerY =
-        rect.height / 2;
-
-
-    GlobeState.globe.radius =
-        Math.min(
-            rect.width,
-            rect.height
-        ) * 0.32;
-
-
-    drawGlobe();
-
-}
-
-
-/* =========================================================
-   05. DRAW GLOBE
-========================================================= */
-
-function drawGlobe() {
-
-    if (!GlobeState.globe) {
-        return;
-    }
-
-
-    const globe =
-        GlobeState.globe;
-
-
-    const ctx =
-        globe.context;
-
-
-    const canvas =
-        globe.canvas;
-
-
-    const width =
-        canvas.clientWidth;
-
-
-    const height =
-        canvas.clientHeight;
-
-
-    ctx.clearRect(
-        0,
-        0,
-        width,
-        height
-    );
-
-
-    drawStars(
-        ctx,
-        width,
-        height
-    );
-
-
-    drawAtmosphere(
-        ctx,
-        globe.centerX,
-        globe.centerY,
-        globe.radius
-    );
-
-
-    drawEarthSphere(
-        ctx,
-        globe.centerX,
-        globe.centerY,
-        globe.radius
-    );
-
-
-    drawMapGrid(
-        ctx,
-        globe.centerX,
-        globe.centerY,
-        globe.radius
-    );
-
-
-    drawStationDots(
-        ctx,
-        globe.centerX,
-        globe.centerY,
-        globe.radius
-    );
-
-
-    drawGlobeGlow(
-        ctx,
-        globe.centerX,
-        globe.centerY,
-        globe.radius
-    );
-
-}
-
-
-/* =========================================================
-   06. EARTH SPHERE
-========================================================= */
-
-function drawEarthSphere(
-    ctx,
-    x,
-    y,
-    radius
-) {
-
-    const gradient =
-        ctx.createRadialGradient(
-            x - radius * 0.35,
-            y - radius * 0.4,
-            radius * 0.05,
-            x,
-            y,
-            radius
-        );
-
-
-    gradient.addColorStop(
-        0,
-        "#173c73"
-    );
-
-
-    gradient.addColorStop(
-        0.45,
-        "#102c59"
-    );
-
-
-    gradient.addColorStop(
-        0.78,
-        "#071a38"
-    );
-
-
-    gradient.addColorStop(
-        1,
-        "#020816"
-    );
-
-
-    ctx.beginPath();
-
-
-    ctx.arc(
-        x,
-        y,
-        radius,
-        0,
-        Math.PI * 2
-    );
-
-
-    ctx.fillStyle =
-        gradient;
-
-
-    ctx.fill();
-
-
-    /*
-       Outer edge
-    */
-
-    ctx.beginPath();
-
-
-    ctx.arc(
-        x,
-        y,
-        radius,
-        0,
-        Math.PI * 2
-    );
-
-
-    ctx.strokeStyle =
-        "rgba(160,220,255,.45)";
-
-
-    ctx.lineWidth = 1.5;
-
-
-    ctx.stroke();
-
-}
-
-
-/* =========================================================
-   07. MAP GRID
-========================================================= */
-
-function drawMapGrid(
-    ctx,
-    x,
-    y,
-    radius
-) {
-
-    ctx.save();
-
-
-    ctx.beginPath();
-
-
-    ctx.arc(
-        x,
-        y,
-        radius,
-        0,
-        Math.PI * 2
-    );
-
-
-    ctx.clip();
-
-
-    /*
-       Latitude lines
-    */
-
-    for (
-        let lat = -60;
-        lat <= 60;
-        lat += 20
-    ) {
-
-        const curve =
-            Math.cos(
-                lat *
-                Math.PI /
-                180
+            document.head.appendChild(
+                script
             );
-
-
-        ctx.beginPath();
-
-
-        ctx.ellipse(
-            x,
-            y,
-            radius *
-                Math.max(
-                    curve,
-                    0.12
-                ),
-            radius *
-                0.18,
-            0,
-            0,
-            Math.PI * 2
-        );
-
-
-        ctx.strokeStyle =
-            "rgba(130,205,255,.10)";
-
-
-        ctx.lineWidth =
-            0.7;
-
-
-        ctx.stroke();
-
-    }
-
-
-    /*
-       Longitude lines
-    */
-
-    for (
-        let lon = -160;
-        lon <= 160;
-        lon += 20
-    ) {
-
-        const curve =
-            Math.cos(
-                lon *
-                Math.PI /
-                180
-            );
-
-
-        ctx.beginPath();
-
-
-        ctx.ellipse(
-            x,
-            y,
-            radius *
-                Math.max(
-                    Math.abs(curve),
-                    0.08
-                ),
-            radius,
-            0,
-            0,
-            Math.PI * 2
-        );
-
-
-        ctx.strokeStyle =
-            "rgba(130,205,255,.08)";
-
-
-        ctx.lineWidth =
-            0.7;
-
-
-        ctx.stroke();
-
-    }
-
-
-    ctx.restore();
-
-}
-
-
-/* =========================================================
-   08. ATMOSPHERE
-========================================================= */
-
-function drawAtmosphere(
-    ctx,
-    x,
-    y,
-    radius
-) {
-
-    const glow =
-        ctx.createRadialGradient(
-            x,
-            y,
-            radius * 0.82,
-            x,
-            y,
-            radius * 1.18
-        );
-
-
-    glow.addColorStop(
-        0,
-        "rgba(90,190,255,0)"
-    );
-
-
-    glow.addColorStop(
-        0.75,
-        "rgba(90,190,255,.10)"
-    );
-
-
-    glow.addColorStop(
-        1,
-        "rgba(255,130,220,.32)"
-    );
-
-
-    ctx.beginPath();
-
-
-    ctx.arc(
-        x,
-        y,
-        radius * 1.15,
-        0,
-        Math.PI * 2
-    );
-
-
-    ctx.fillStyle =
-        glow;
-
-
-    ctx.fill();
-
-}
-
-
-/* =========================================================
-   09. GLOBE GLOW
-========================================================= */
-
-function drawGlobeGlow(
-    ctx,
-    x,
-    y,
-    radius
-) {
-
-    ctx.save();
-
-
-    ctx.shadowBlur =
-        35;
-
-
-    ctx.shadowColor =
-        "rgba(100,210,255,.35)";
-
-
-    ctx.beginPath();
-
-
-    ctx.arc(
-        x,
-        y,
-        radius,
-        0,
-        Math.PI * 2
-    );
-
-
-    ctx.strokeStyle =
-        "rgba(160,225,255,.25)";
-
-
-    ctx.lineWidth =
-        2;
-
-
-    ctx.stroke();
-
-
-    ctx.restore();
-
-}
-
-
-/* =========================================================
-   10. STAR FIELD
-========================================================= */
-
-function createStarField() {
-
-    GlobeState.stars = [];
-
-
-    const count =
-        window.innerWidth < 600
-            ? 90
-            : 180;
-
-
-    for (
-        let i = 0;
-        i < count;
-        i++
-    ) {
-
-        GlobeState.stars.push({
-
-            x:
-                Math.random(),
-
-            y:
-                Math.random(),
-
-            size:
-                Math.random() *
-                1.8 +
-                0.3,
-
-            opacity:
-                Math.random() *
-                0.7 +
-                0.2,
-
-            phase:
-                Math.random() *
-                Math.PI *
-                2
 
         });
 
     }
 
-}
 
+    /* =====================================================
+       LOAD GLOBE DEPENDENCIES
+    ===================================================== */
 
-/* =========================================================
-   11. DRAW STARS
-========================================================= */
+    async function loadDependencies() {
 
-function drawStars(
-    ctx,
-    width,
-    height
-) {
+        if (dependenciesLoaded) {
+            return true;
+        }
 
-    const time =
-        Date.now() / 1000;
+        try {
 
-
-    GlobeState.stars.forEach(
-        star => {
-
-            const twinkle =
-                (
-                    Math.sin(
-                        time * 1.5 +
-                        star.phase
-                    ) + 1
-                ) / 2;
-
-
-            ctx.beginPath();
-
-
-            ctx.arc(
-                star.x * width,
-                star.y * height,
-                star.size,
-                0,
-                Math.PI * 2
+            await loadScript(
+                CONFIG.topoJsonLibrary
             );
 
+            await loadScript(
+                CONFIG.globeLibrary
+            );
 
-            ctx.fillStyle =
-                `rgba(255,255,255,${
-                    star.opacity *
-                    (0.55 + twinkle * 0.45)
-                })`;
+            dependenciesLoaded = true;
 
+            return true;
 
-            ctx.fill();
+        } catch (error) {
 
+            console.error(
+                "Globe dependencies failed:",
+                error
+            );
+
+            showGlobeError(
+                "Unable to load the 3D globe."
+            );
+
+            return false;
         }
-    );
-
-}
-
-
-/* =========================================================
-   12. CREATE ATMOSPHERE LAYER
-========================================================= */
-
-function createGlobeAtmosphere() {
-
-    if (
-        !GlobeState.container
-    ) {
-
-        return;
 
     }
 
 
-    GlobeState.container.classList.add(
-        "globe-ready"
-    );
+    /* =====================================================
+       INITIALIZE
+    ===================================================== */
 
-}
+    async function initializeGlobe(
+        stationData = []
+    ) {
+
+        globeContainer =
+            document.getElementById("globe");
+
+        if (!globeContainer) {
+
+            console.warn(
+                "RadioVerse globe container not found."
+            );
+
+            return;
+        }
+
+        stations =
+            Array.isArray(stationData)
+                ? stationData
+                : [];
+
+        showLoading();
+
+        const loaded =
+            await loadDependencies();
+
+        if (!loaded) {
+            return;
+        }
+
+        try {
+
+            await loadCountryData();
+
+            createGlobe();
+
+            renderStations();
+
+            setupGlobeControls();
+
+            hideLoading();
+
+            console.log(
+                `RadioVerse globe loaded with ${stations.length} stations.`
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Globe initialization error:",
+                error
+            );
+
+            showGlobeError(
+                "The globe could not be initialized."
+            );
+
+        }
+
+    }
 
 
-/* =========================================================
-   13. STATION DOTS
-========================================================= */
+    /* =====================================================
+       COUNTRY DATA
+    ===================================================== */
 
-function drawStationDots(
-    ctx,
-    centerX,
-    centerY,
-    radius
-) {
+    async function loadCountryData() {
 
-    const stations =
-        StationStore.currentResults
-            .length
-            ? StationStore.currentResults
-            : StationStore.all;
+        if (
+            !window.topojson ||
+            typeof window.topojson.feature !==
+                "function"
+        ) {
+
+            throw new Error(
+                "TopoJSON library unavailable."
+            );
+        }
+
+        const response =
+            await fetch(
+                CONFIG.topoJson
+            );
+
+        if (!response.ok) {
+
+            throw new Error(
+                `World map request failed: ${response.status}`
+            );
+        }
+
+        const world =
+            await response.json();
+
+        countryFeatures =
+            window.topojson.feature(
+                world,
+                world.objects.countries
+            ).features;
+
+    }
 
 
-    stations.forEach(
-        station => {
+    /* =====================================================
+       CREATE GLOBE
+    ===================================================== */
 
-            if (
-                !Number.isFinite(
-                    station.latitude
-                ) ||
-                !Number.isFinite(
-                    station.longitude
+    function createGlobe() {
+
+        if (!window.Globe) {
+
+            throw new Error(
+                "Globe.gl is unavailable."
+            );
+        }
+
+        globeContainer.innerHTML = "";
+
+        const width =
+            globeContainer.clientWidth ||
+            window.innerWidth;
+
+        const height =
+            globeContainer.clientHeight ||
+            Math.min(
+                window.innerHeight * 0.65,
+                700
+            );
+
+
+        globe =
+            window.Globe()(globeContainer)
+
+                /* -----------------------------------------
+                   SIZE
+                ----------------------------------------- */
+
+                .width(width)
+
+                .height(height)
+
+                /* -----------------------------------------
+                   BACKGROUND
+                ----------------------------------------- */
+
+                .backgroundColor(
+                    CONFIG.backgroundColor
                 )
-            ) {
 
-                return;
+                /* -----------------------------------------
+                   EARTH
+                ----------------------------------------- */
 
-            }
+                .globeImageUrl(
+                    "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
+                )
 
+                .bumpImageUrl(
+                    "https://unpkg.com/three-globe/example/img/earth-topology.png"
+                )
 
-            const position =
-                projectCoordinates(
-                    station.latitude,
-                    station.longitude,
-                    centerX,
-                    centerY,
-                    radius
+                .showAtmosphere(true)
+
+                .atmosphereColor(
+                    "#45cfff"
+                )
+
+                .atmosphereAltitude(
+                    0.16
+                )
+
+                /* -----------------------------------------
+                   COUNTRY BORDERS
+                ----------------------------------------- */
+
+                .polygonsData(
+                    countryFeatures
+                )
+
+                .polygonCapColor(
+                    () => "rgba(15, 80, 160, 0.05)"
+                )
+
+                .polygonSideColor(
+                    () => "rgba(50, 180, 255, 0.12)"
+                )
+
+                .polygonStrokeColor(
+                    () => "rgba(100, 220, 255, 0.65)"
+                )
+
+                .polygonAltitude(
+                    0.006
+                )
+
+                .polygonLabel(
+                    feature => {
+
+                        const name =
+                            feature.properties &&
+                            (
+                                feature.properties.name ||
+                                feature.properties.NAME
+                            );
+
+                        return `
+                            <div class="country-tooltip">
+                                ${name || "Country"}
+                            </div>
+                        `;
+                    }
+                )
+
+                /* -----------------------------------------
+                   STATION POINTS
+                ----------------------------------------- */
+
+                .pointsData(
+                    stationsWithCoordinates()
+                )
+
+                .pointLat(
+                    station =>
+                        Number(station.latitude)
+                )
+
+                .pointLng(
+                    station =>
+                        Number(station.longitude)
+                )
+
+                .pointAltitude(
+                    0.025
+                )
+
+                .pointRadius(
+                    0.32
+                )
+
+                .pointColor(
+                    () => "#66e8ff"
+                )
+
+                .pointResolution(
+                    12
+                )
+
+                .pointLabel(
+                    station => {
+
+                        const name =
+                            escapeHtml(
+                                station.name ||
+                                "Radio Station"
+                            );
+
+                        const city =
+                            escapeHtml(
+                                station.city ||
+                                ""
+                            );
+
+                        const country =
+                            escapeHtml(
+                                station.country ||
+                                ""
+                            );
+
+                        return `
+                            <div class="station-tooltip">
+                                <strong>${name}</strong>
+                                <span>
+                                    ${city}
+                                    ${city && country ? ", " : ""}
+                                    ${country}
+                                </span>
+                            </div>
+                        `;
+                    }
+                )
+
+                /* -----------------------------------------
+                   STATION CLICK
+                ----------------------------------------- */
+
+                .onPointClick(
+                    station => {
+
+                        selectStation(
+                            station
+                        );
+
+                    }
                 );
 
 
-            if (!position.visible) {
-                return;
-            }
-
-
-            /*
-               Outer glow
-            */
-
-            ctx.beginPath();
-
-
-            ctx.arc(
-                position.x,
-                position.y,
-                7,
-                0,
-                Math.PI * 2
-            );
-
-
-            ctx.fillStyle =
-                "rgba(255,120,205,.08)";
-
-
-            ctx.fill();
-
-
-            /*
-               Main glowing dot
-            */
-
-            ctx.beginPath();
-
-
-            ctx.arc(
-                position.x,
-                position.y,
-                2.4,
-                0,
-                Math.PI * 2
-            );
-
-
-            ctx.fillStyle =
-                isRajasthanStation(station)
-                    ? "#ff82c8"
-                    : "#7de7ff";
-
-
-            ctx.shadowBlur =
-                12;
-
-
-            ctx.shadowColor =
-                isRajasthanStation(station)
-                    ? "#ff82c8"
-                    : "#7de7ff";
-
-
-            ctx.fill();
-
-
-            ctx.shadowBlur =
-                0;
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   14. PROJECT LAT/LON
-========================================================= */
-
-function projectCoordinates(
-    latitude,
-    longitude,
-    centerX,
-    centerY,
-    radius
-) {
-
-    const lat =
-        latitude *
-        Math.PI /
-        180;
-
-
-    const lon =
-        longitude *
-        Math.PI /
-        180;
-
-
-    /*
-       Current globe rotation
-    */
-
-    const rotation =
-        GlobeState.globe
-            ? GlobeState.globe.rotationY
-            : 0;
-
-
-    const rotatedLon =
-        lon +
-        rotation;
-
-
-    const x3d =
-        Math.cos(lat) *
-        Math.sin(rotatedLon);
-
-
-    const y3d =
-        Math.sin(lat);
-
-
-    const z3d =
-        Math.cos(lat) *
-        Math.cos(rotatedLon);
-
-
-    /*
-       Only show the visible side
-    */
-
-    const visible =
-        z3d > 0;
-
-
-    return {
-
-        x:
-            centerX +
-            radius *
-            x3d,
-
-        y:
-            centerY -
-            radius *
-            y3d,
-
-        visible
-
-    };
-
-}
-
-
-/* =========================================================
-   15. SET GLOBE LOCATION
-========================================================= */
-
-function setGlobeLocation(
-    latitude,
-    longitude,
-    level = "country"
-) {
-
-    if (
-        !Number.isFinite(latitude) ||
-        !Number.isFinite(longitude)
-    ) {
-
-        return;
-
-    }
-
-
-    GlobeState.currentLatitude =
-        latitude;
-
-
-    GlobeState.currentLongitude =
-        longitude;
-
-
-    GlobeState.currentLevel =
-        level;
-
-
-    /*
-       Rotate globe toward target.
-    */
-
-    if (
-        GlobeState.globe
-    ) {
-
-        GlobeState.globe.rotationY =
-            -longitude *
-            Math.PI /
-            180;
-
-    }
-
-
-    drawGlobe();
-
-
-    dispatchRadioEvent(
-        RADIO_EVENTS.locationChanged,
-        {
-
-            latitude,
-
-            longitude,
-
-            level
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   16. FOCUS INDIA
-========================================================= */
-
-function focusIndia() {
-
-    setGlobeLocation(
-        22.5,
-        78.9,
-        "country"
-    );
-
-}
-
-
-/* =========================================================
-   17. FOCUS RAJASTHAN
-========================================================= */
-
-function focusRajasthan() {
-
-    setGlobeLocation(
-        27.0,
-        74.2,
-        "state"
-    );
-
-}
-
-
-/* =========================================================
-   18. FOCUS DISTRICT
-========================================================= */
-
-function focusDistrict(
-    latitude,
-    longitude
-) {
-
-    setGlobeLocation(
-        latitude,
-        longitude,
-        "district"
-    );
-
-}
-
-
-/* =========================================================
-   19. ZOOM
-========================================================= */
-
-function zoomGlobe(
-    amount
-) {
-
-    GlobeState.currentZoom =
-        Math.max(
-            RADIO_GLOBE_CONFIG.globe.minZoom,
-            Math.min(
-                RADIO_GLOBE_CONFIG.globe.maxZoom,
-                GlobeState.currentZoom +
-                amount
-            )
+        /* =================================================
+           INITIAL CAMERA
+        ================================================= */
+
+        globe.pointOfView(
+            {
+                lat: 20,
+                lng: 75,
+                altitude: 2.15
+            },
+            1200
         );
 
 
-    if (
-        GlobeState.globe
-    ) {
+        /* =================================================
+           CONTROLS
+        ================================================= */
 
-        GlobeState.globe.radius =
-            Math.min(
-                GlobeState.container
-                    .clientWidth,
+        const controls =
+            globe.controls();
 
-                GlobeState.container
-                    .clientHeight
+        if (controls) {
 
-            ) *
-            0.32 *
-            GlobeState.currentZoom;
-
-    }
-
-
-    drawGlobe();
-
-}
-
-
-/* =========================================================
-   20. POINTER INTERACTION
-========================================================= */
-
-function setupGlobeInteraction() {
-
-    const canvas =
-        GlobeState.globe.canvas;
-
-
-    canvas.addEventListener(
-        "pointerdown",
-        event => {
-
-            GlobeState.isDragging =
+            controls.enableZoom =
                 true;
 
-
-            GlobeState.autoRotate =
+            controls.enablePan =
                 false;
 
+            controls.minDistance =
+                180;
 
-            GlobeState.lastPointerX =
-                event.clientX;
+            controls.maxDistance =
+                600;
 
+            controls.autoRotate =
+                true;
 
-            GlobeState.lastPointerY =
-                event.clientY;
+            controls.autoRotateSpeed =
+                0.35;
 
+            controls.enableDamping =
+                true;
 
-            canvas.setPointerCapture(
-                event.pointerId
-            );
-
-        }
-    );
-
-
-    canvas.addEventListener(
-        "pointermove",
-        event => {
-
-            if (
-                !GlobeState.isDragging
-            ) {
-
-                return;
-
-            }
-
-
-            const deltaX =
-                event.clientX -
-                GlobeState.lastPointerX;
-
-
-            const deltaY =
-                event.clientY -
-                GlobeState.lastPointerY;
-
-
-            GlobeState.lastPointerX =
-                event.clientX;
-
-
-            GlobeState.lastPointerY =
-                event.clientY;
-
-
-            if (
-                GlobeState.globe
-            ) {
-
-                GlobeState.globe.rotationY +=
-                    deltaX * 0.008;
-
-
-                GlobeState.globe.rotationX +=
-                    deltaY * 0.004;
-
-            }
-
-
-            drawGlobe();
+            controls.dampingFactor =
+                0.08;
 
         }
-    );
 
 
-    canvas.addEventListener(
-        "pointerup",
-        event => {
+        /* =================================================
+           RESIZE
+        ================================================= */
 
-            GlobeState.isDragging =
-                false;
-
-
-            canvas.releasePointerCapture(
-                event.pointerId
-            );
-
-        }
-    );
-
-
-    canvas.addEventListener(
-        "pointercancel",
-        () => {
-
-            GlobeState.isDragging =
-                false;
-
-        }
-    );
-
-
-    canvas.addEventListener(
-        "wheel",
-        event => {
-
-            event.preventDefault();
-
-
-            zoomGlobe(
-                event.deltaY > 0
-                    ? -0.12
-                    : 0.12
-            );
-
-        },
-        {
-            passive: false
-        }
-    );
-
-}
-
-
-/* =========================================================
-   21. AUTO ROTATION
-========================================================= */
-
-function animateGlobe() {
-
-    if (
-        !GlobeState.globe
-    ) {
-
-        return;
-
-    }
-
-
-    if (
-        GlobeState.autoRotate &&
-        !GlobeState.isDragging
-    ) {
-
-        GlobeState.globe.rotationY +=
-            RADIO_GLOBE_CONFIG
-                .globe
-                .rotationSpeed *
-            0.001;
-
-    }
-
-
-    drawGlobe();
-
-
-    GlobeState.animationFrame =
-        requestAnimationFrame(
-            animateGlobe
+        window.addEventListener(
+            "resize",
+            resizeGlobe
         );
 
-}
+    }
 
 
-/* =========================================================
-   22. START ROTATION
-========================================================= */
+    /* =====================================================
+       STATIONS WITH VALID COORDINATES
+    ===================================================== */
 
-function startGlobeRotation() {
+    function stationsWithCoordinates() {
 
-    GlobeState.autoRotate =
-        true;
+        return stations.filter(
+            station => {
 
+                const lat =
+                    Number(
+                        station.latitude
+                    );
 
-    if (
-        !GlobeState.animationFrame
-    ) {
+                const lng =
+                    Number(
+                        station.longitude
+                    );
 
-        animateGlobe();
+                return (
+                    Number.isFinite(lat) &&
+                    Number.isFinite(lng) &&
+                    lat >= -90 &&
+                    lat <= 90 &&
+                    lng >= -180 &&
+                    lng <= 180
+                );
+
+            }
+        );
 
     }
 
-}
+
+    /* =====================================================
+       RENDER / UPDATE STATIONS
+    ===================================================== */
+
+    function renderStations() {
+
+        if (!globe) {
+            return;
+        }
+
+        globe.pointsData(
+            stationsWithCoordinates()
+        );
+
+    }
 
 
-/* =========================================================
-   23. STOP ROTATION
-===========================================
+    /* =====================================================
+       UPDATE STATIONS FROM API
+    ===================================================== */
+
+    function updateGlobeStations(
+        stationData = []
+    ) {
+
+        stations =
+            Array.isArray(stationData)
+                ? stationData
+                : [];
+
+        renderStations();
+
+    }
+
+
+    /* =====================================================
+       SELECT STATION
+    ===================================================== */
+
+    function selectStation(station) {
+
+        if (!station) {
+            return;
+        }
+
+        if (
+            window.RadioVerse &&
+            typeof window.RadioVerse
+                .selectStation === "function"
+        ) {
+
+            window.RadioVerse.selectStation(
+                station
+            );
+
+            return;
+        }
+
+        console.log(
+            "Selected station:",
+            station
+        );
+
+    }
+
+
+    /* =====================================================
+       ZOOM IN
+    ===================================================== */
+
+    function zoomIn() {
+
+        if (!globe) {
+            return;
+        }
+
+        const camera =
+            globe.camera();
+
+        const current =
+            globe.pointOfView();
+
+        const nextAltitude =
+            Math.max(
+                current.altitude * 0.75,
+                0.8
+            );
+
+        globe.pointOfView(
+            {
+                lat: current.lat,
+                lng: current.lng,
+                altitude: nextAltitude
+            },
+            500
+        );
+
+    }
+
+
+    /* =====================================================
+       ZOOM OUT
+    ===================================================== */
+
+    function zoomOut() {
+
+        if (!globe) {
+            return;
+        }
+
+        const current =
+            globe.pointOfView();
+
+        const nextAltitude =
+            Math.min(
+                current.altitude * 1.3,
+                4.5
+            );
+
+        globe.pointOfView(
+            {
+                lat: current.lat,
+                lng: current.lng,
+                altitude: nextAltitude
+            },
+            500
+        );
+
+    }
+
+
+    /* =====================================================
+       RESET
+    ===================================================== */
+
+    function resetGlobe() {
+
+        if (!globe) {
+            return;
+        }
+
+        globe.pointOfView(
+            {
+                lat: 20,
+                lng: 75,
+                altitude: 2.15
+            },
+            1000
+        );
+
+    }
+
+
+    /* =====================================================
+       SETUP BUTTONS
+    ===================================================== */
+
+    function setupGlobeControls() {
+
+        const zoomInButton =
+            document.getElementById(
+                "zoom-in"
+            );
+
+        const zoomOutButton =
+            document.getElementById(
+                "zoom-out"
+            );
+
+        const resetButton =
+            document.getElementById(
+                "reset-globe"
+            );
+
+
+        if (zoomInButton) {
+
+            zoomInButton.onclick =
+                zoomIn;
+
+        }
+
+
+        if (zoomOutButton) {
+
+            zoomOutButton.onclick =
+                zoomOut;
+
+        }
+
+
+        if (resetButton) {
+
+            resetButton.onclick =
+                resetGlobe;
+
+        }
+
+    }
+
+
+    /* =====================================================
+       RESIZE
+    ===================================================== */
+
+    function resizeGlobe() {
+
+        if (!globe || !globeContainer) {
+            return;
+        }
+
+        const width =
+            globeContainer.clientWidth;
+
+        const height =
+            globeContainer.clientHeight;
+
+        if (width > 0) {
+            globe.width(width);
+        }
+
+        if (height > 0) {
+            globe.height(height);
+        }
+
+    }
+
+
+    /* =====================================================
+       LOADING
+    ===================================================== */
+
+    function showLoading() {
+
+        if (!globeContainer) {
+            return;
+        }
+
+        globeContainer.innerHTML = `
+            <div class="globe-loading">
+                <div class="globe-loader"></div>
+                <p>Loading World Radio...</p>
+            </div>
+        `;
+
+    }
+
+
+    function hideLoading() {
+
+        const loading =
+            globeContainer &&
+            globeContainer.querySelector(
+                ".globe-loading"
+            );
+
+        if (loading) {
+            loading.remove();
+        }
+
+    }
+
+
+    /* =====================================================
+       ERROR
+    ===================================================== */
+
+    function showGlobeError(message) {
+
+        if (!globeContainer) {
+            return;
+        }
+
+        globeContainer.innerHTML = `
+            <div class="globe-error">
+                <div class="globe-error-icon">🌍</div>
+                <strong>Globe unavailable</strong>
+                <span>${escapeHtml(message)}</span>
+            </div>
+        `;
+
+    }
+
+
+    /* =====================================================
+       HTML ESCAPE
+    ===================================================== */
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+
+    }
+
+
+    /* =====================================================
+       GLOBAL API
+    ===================================================== */
+
+    window.initializeGlobe =
+        initializeGlobe;
+
+    window.updateGlobeStations =
+        updateGlobeStations;
+
+    window.resetRadioGlobe =
+        resetGlobe;
+
+
+})();
